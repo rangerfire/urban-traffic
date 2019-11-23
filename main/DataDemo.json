@@ -1,0 +1,99 @@
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`chuang` /*!40100 DEFAULT CHARACTER SET utf8 */;
+
+USE `chuang`;
+
+/*Table structure for table `carinfos` */
+
+DROP TABLE IF EXISTS `carinfos`;
+
+CREATE TABLE `carinfos` (
+  `car_id` varchar(6) NOT NULL,
+  `event` enum('0','1','2','3','4') NOT NULL,
+  `carstatus` enum('0','1','2','3','4') NOT NULL,
+  `time` datetime NOT NULL,
+  `longitude` double NOT NULL,
+  `latitude` double NOT NULL,
+  `speed` tinyint(3) unsigned NOT NULL,
+  `direction` smallint(5) unsigned NOT NULL,
+  `gpsstatus` enum('0','1') NOT NULL,
+  PRIMARY KEY (`car_id`,`time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/**/
+CREATE TABLE tmp LIKE carinfos;
+INSERT INTO tmp SELECT DISTINCT * FROM carinfos;
+
+//'\n67543'->'067543'
+UPDATE tmp SET car_id=CONCAT('0',MID(car_id,1)) WHERE car_id LIKE '\n%';
+
+//hotspot
+[//"[]"表示数组
+	[//0
+		{
+			'longitude':116.6521120,
+			'latitude' :40.0046570,
+			'value'	   :10
+		},
+		{
+			'longitude':116.8521120,
+			'latitude' :40.1046570,
+			'value'	   :7
+		},
+		//...
+	]，
+	[//1   json
+		{
+			'longitude':116.6521120,
+			'latitude' :40.0046570,
+			'value'	   :5
+		},
+		{
+			'longitude':116.8521120,
+			'latitude' :40.1046570,
+			'value'	   :7
+		},
+		//...
+	],
+	//...
+]
+
+
+//trafficjam
+[	
+	[//0
+		{
+			'bglongitude':116.2213234,
+			'bglatitude':39.8075522,
+			'edlongitude':116.2613234,
+			'edlatitude':39.8875522,
+			'averspeed' :0.8,	//km/h
+			'direction' :true	//true:bg->ed   false:ed->bg
+		},
+		{
+			'bglongitude':116.2213234,
+			'bglatitude':19.8075522,
+			'edlongitude':116.2613234,
+			'edlatitude':19.8875522,
+			'averspeed' :1,	//km/h
+			'direction' :true	//true:bg->ed   false:ed->bg
+		},
+	],
+	[//1
+		{
+			'bglongitude':116.2213234,
+			'bglatitude':19.8075522,
+			'edlongitude':116.2613234,
+			'edlatitude':19.8875522,
+			'averspeed' :0.5,	//km/h
+			'direction' :true	//true:bg->ed   false:ed->bg
+		},
+		{
+			'bglongitude':116.2213234,
+			'bglatitude':19.8075522,
+			'edlongitude':116.2613234,
+			'edlatitude':19.8875522,
+			'averspeed' :0,		//km/h
+			'direction' :true	//true:bg->ed   false:ed->bg
+		},
+	],
+]

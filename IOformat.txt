@@ -1,0 +1,169 @@
+Abnormal:
+1.	点击开始搜索
+	1)	请求数据格式
+	{
+		bound: [ [ lat , lng ] , [ lat , lng ] ],
+		startDate : ’yyyy-MM-dd HH:mm’,
+		endDate : ’yyyy-MM-dd HH:mm’,
+	}
+	2)	接受数据格式
+	{
+			status:1,  //ok
+			map: { //地图显示数据
+				routes: [
+					[[39.798, 116.223], [39.798, 116.243], [40.052, 116.538]],
+					[[39.768, 116.253], [40.032, 116.528]]
+				],
+				normalSpeeds: [40, 60],//km/h
+				abnormalSpeeds: [10, 20],
+				  streetIds:[1,2],
+				streetNames: [
+					'xx路1', 'xx路2'
+				],
+				reasons: [
+					{},
+					{
+						time: '2012/11/12 12:23',
+						text: '原因',
+						pic: '图片地址',
+						link: '地址',
+						linkName: '新浪微博'
+					}
+				]
+			},
+			param:{
+				bound:[[39.798,116.223],[39.798,116.243]],
+				startDate:'2012-11-01 23:00',
+				endDate:'2012-11-24 08:00'
+			},
+			toplist:[ // 排行榜数据
+				{
+					streetName:'xx2',
+					  streetId:1,
+					times:10,
+				},
+				{
+					streetName:'xx1',
+					  streetId:2,
+					times:10,
+				}
+			]
+	};
+
+
+	or
+	{
+		status:0,    //error
+	msg:’原因’  
+	}
+2.	点击排行榜序列
+	1)	请求数据格式
+	{
+	streetId:1,
+	streetName:’xx’,
+	startDate: '2012-11-02 01:00',
+	endDate:'2012-11-02 03:00’
+	}
+	2)	接受数据格式
+	{
+				 param:{
+			streetName:’’,
+	streetId:2,
+	   },
+		 normal:[10,13], //km/h
+		 abnormal:[3,4],
+		 times:['2012-11-02 01:00','2012-11-02 02:00', '2012-11-02 03:00'],
+	 }
+
+
+Jam
+
+1．	点击开始搜索
+	1)	发送数据格式
+	{
+			 bound: [ [ lat , lng ] , [ lat , lng ] ],
+			 startDate : ’yyyy-MM-dd HH:mm’,
+			 endDate : ’yyyy-MM-dd HH:mm’,
+	}
+	2)	接受数据格式
+	{
+				status:1,  //ok   0->error  msg->错误信息
+				map: {
+					routes: [
+						[[39.798, 116.223], [39.798, 116.243], [40.052, 116.538]],
+						[[39.768, 116.253], [40.032, 116.528]]
+					],
+					speeds: [40, 60],//km/h
+					levels:[1,2], //1->拥挤 2->缓行 3->畅通
+					streetNames: [
+						'xx路1', 'xx路2'
+					],
+					streetIds:[1,2],
+					reasons: [
+						{},
+						{
+							time: '2012/11/12 12:23',
+							text: '原因',
+							pic: '图片地址',
+							link: '地址',
+							linkName: '新浪微博'
+						}
+					]
+				},
+				param:{
+					bound:[[39.798,116.223],[39.798,116.243]],
+					startDate:'2012-11-01 07:00',
+					endDate:'2012-11-24 08:00'
+				},
+				toplist:[
+					{
+						streetName:'xx2',
+						streetId:1,
+						speed:10,
+						lev:1,
+					},
+					{
+						streetName:'xx1',
+						streetId:2,
+						speed:50,
+						lev:2,
+					}
+				]
+			}
+2. 点击排行榜
+		1) 发送数据格式
+			{
+				streetId:1,
+				streetName:’xx’,
+		date:’2012-11-02’
+		}
+
+		2) 接受数据格式  (获取11-02的1号路段的24小时拥堵信息)
+			{
+				date:’2012-11-02’,
+				times:[ ’12a~1a’, ’1a~2a’,…,’11p~12p’],
+		speed:[10,20,10,20,…],
+		lev:[1,2,3,2,…],
+		streetId:1,
+		streetName:’’
+		}
+3.	点击chart下的添加不同路段/不同时间段 按钮
+	（横坐标24个小时，纵坐标哪个路段哪个日期）
+	1) 发送数据格式
+				{
+					streetId:1,
+					streetName:’xx’,
+	date:’2012-11-02’
+	}
+
+	2)  接受数据格式  (获取11-02的1号路段的24小时拥堵信息)
+		 {
+			date:’2012-11-02’,
+			times:[ ’12a~1a’, ’1a~2a’,…,’11p~12p’],
+	speed:[10,20,10,20,…],
+	lev:[1,2,3,2,…],
+	streetId:1,
+	streetName:’’
+	}
+
+4.	  各天拥堵路段数量对比

@@ -1,0 +1,229 @@
+
+//共享数据，进行互斥并发的
+public class Share {
+	private int a;
+	Share()
+	{
+		a=0;
+	}
+	Share(int i)
+	{
+		a=i;
+	}
+	public int add()
+	{
+		synchronized(this)
+		{
+			a=a+1;
+			return a-1;
+		}
+	}
+}
+
+
+//线程控制代码
+import java.util.*;
+import java.io.*;
+import java.util.regex.*;
+public class Test {
+	public static void main(String[] args) throws IOException
+	{
+		InputStreamReader isr = new InputStreamReader(new FileInputStream("E:/bus_stop_gps.txt"), "UTF-8");
+		BufferedReader br=new BufferedReader(isr);
+		String str=null;
+		ArrayList<BusStop> bus_stop=new ArrayList<BusStop>();
+		BusStop bsp=null;
+		System.out.println("start");
+		while((str=br.readLine())!=null)
+		{
+			bsp=new BusStop();
+			bsp.SetBusStop(str);
+			bus_stop.add(bsp);
+		}
+		br.close();
+		File dir=new File("E:/test");
+		File[] fs=dir.listFiles();
+		Share share=new Share(0);
+		try
+		{
+			for(int i=0;i<20;i++)
+			{
+				new myThread(share,fs,bus_stop).start();
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		finally
+		{
+			System.out.println("end");
+		}
+	}
+}
+
+/////////////线程
+import java.io.*;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+
+public class myThread extends Thread{
+	private Share s1=null;
+	private File[] fs=null;
+	ArrayList<BusStop> A=null;
+	myThread(Share s,File[] f,ArrayList<BusStop> a)
+	{
+		s1=s;
+		fs=f;
+		A=new ArrayList<BusStop>();
+		BusStop m=null;
+		for(int i=0;i<a.size();i++)
+		{
+			m=new BusStop();
+			m.region=String.valueOf(a.get(i).region);
+			m.lon=a.get(i).lon;
+			m.lat=a.get(i).lat;
+			A.add(m);
+		}
+	}
+	public void run()
+	{
+		int len=fs.length;
+		int num;
+		while((num=s1.add())<len)
+		{
+			try
+			{
+				translate(fs[num],A);
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+			}
+			finally
+			{
+				
+			}
+		}
+	}
+	public static void translate(File e,ArrayList<BusStop> bus) throws IOException
+	{
+		BufferedReader br=null;
+		br=new BufferedReader(new FileReader(e));
+		BufferedWriter bw=new BufferedWriter(new FileWriter("E:/"+e.getName()));
+		java.util.regex.Pattern p=java.util.regex.Pattern.compile("\\d+(\\.\\d+)?");
+		Matcher m=null;
+		String str=null;
+		Point point=new Point();
+		while((str=br.readLine())!=null)
+		{	
+			if(str.length()>0)
+			{
+				double lon,lat;
+				m=p.matcher(str);
+				m.find();
+				point.id=m.group();
+				m.find();
+				point.trig=Integer.valueOf(m.group());
+			    m.find();
+			    point.status=Integer.valueOf(m.group());
+			    m.find();
+			    point.time=changeTime(m.group());
+			    m.find();
+			    lon=Double.valueOf(m.group());
+			    m.find();
+			    lat=Double.valueOf(m.group());
+			    m.find();
+			    point.GPSSpeed=Integer.valueOf(m.group());
+			    m.find();
+			    point.GPSDirection=Integer.valueOf(m.group());
+			    m.find();
+			    point.GPSStatus=Integer.valueOf(m.group());
+			    for(int i=0;i<bus.size();i++)
+			    {
+			    	double dis=bus.get(i).getDistance(lon, lat);
+			    	if(dis<53&&dis>=0)
+			    	{
+			    		point.regionnum=i;
+			    		bw.write(point.toString());
+					    bw.newLine();
+					    break;
+				    }
+			    }
+			    //System.out.println(point.toString());
+			}
+		}
+		bw.flush();
+		System.out.println(e.getName());
+	}
+	public static String changeTime(String time)
+	{
+		StringBuffer sb=new StringBuffer(time);
+		sb.insert(4, '-');
+		sb.insert(7, '-');
+		sb.insert(10, ' ');
+		sb.insert(13, ':');
+		sb.insert(16, ':');
+		return sb.toString();
+	}
+}
+
+
+
+//公交站台类
+package Mining;
+
+public class BusStop {
+	public int id;
+	public String region=null;
+	public double lon;
+	public double lat;
+	BusStop()
+	{
+		
+	}
+	//设置公交站台的相关信息
+	public void SetBusStop(String str)
+	{
+		int first,last;
+		first=str.indexOf(',');
+		last=str.lastIndexOf(',');
+		region=str.substring(0,first);
+		lon=Double.valueOf(str.substring(last+1));
+		lat=Double.valueOf(str.substring(first+1,last));
+	}
+	
+	public void print()
+	{
+		System.out.println(region+" "+lat+" "+lon);
+	}
+	
+	
+	//获得点到该公交站台的距离
+	public double getDistance(double lon,double lat)
+	{
+		double dis=GetDistance(this.lon,this.lat ,lon,lat);
+		return dis;
+	}
+	private  final  double EARTH_RADIUS = 6378137;//赤道半径(单位m)  
+    private  double rad(double d)  
+    {  
+       return d * Math.PI / 180.0;  
+    }  
+	private double GetDistance(double lon1,double lat1,double lon2, double lat2)  
+    {  
+		if(lon1<1e-6||lon2<1e-6)
+		{
+			return 0;
+		}
+       double radLat1 = rad(lat1);  
+       double radLat2 = rad(lat2);  
+       double a = radLat1 - radLat2;  
+       double b = rad(lon1) - rad(lon2);  
+       double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2)+Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));  
+       s = s * EARTH_RADIUS;  
+       //s = Math.round(s * 10000) / 10000;  
+       return s;  
+    }
+
+}

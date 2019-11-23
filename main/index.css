@@ -1,0 +1,47 @@
+.header1 {
+	 font-family: 华文行楷;
+	 font-size:15px;
+	 color: black;
+	 line-height: 12px; 
+	 font-weight: lighter
+}
+.header2 {
+	 font-family: 黑体;
+	 font-style:bold;
+	 font-size:12px;
+	 color: gray;
+	 line-height: 8px; 
+	 font-weight: lighter
+}
+.content{
+	margin-left: 25%;
+	margin-right: 25%; 
+	
+
+     font-family: 黑体;
+ 	 font-size:25px;
+	 font-style:bold;
+	 color: black;
+	 line-height: 25px; 
+	 font-weight: lighter
+}
+.text {
+	margin-left: 25%;
+	margin-right: 10%; 
+	height: 100%;
+	 font-size:32px;
+	 font-family: 楷体;
+	 color: black; 
+}
+.text2 {
+	margin-left: 25%;
+	margin-right: 10%; 
+	height: 100%;
+
+	font-family: 黑体;
+	 font-style:bold;
+	 font-size:12px;
+	 color: gray;
+	 line-height: 8px; 
+	 font-weight: lighter
+}

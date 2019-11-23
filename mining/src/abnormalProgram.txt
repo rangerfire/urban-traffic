@@ -1,0 +1,14 @@
+运行顺序为下顺序：
+1.searchdata（你改的），
+入口文件：把原始数据
+出口文件：按路网分成5W条道路的文件夹taxi_group，该文件应为按路段划分好的数据文件,名字为路的id
+
+2.setNormal（我改的）
+入口文件：文件夹taxi_group
+出口文件：文件RoadDia.txt，所有路的分布数据，一组数据包括：路的id，15*8个percent
+
+3.Col1（我最后拷给你的那个）
+入口文件：
+	1）在roadset里，一个是文件RoadDia.txt，一个是yichang_sections.txt（何给的路的基本信息）
+	2）taxi_group
+出口文件：文件Outlier_list.txt，异常信息文件，要改为加上时间的，你改一下吧。
